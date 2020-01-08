@@ -1,13 +1,34 @@
 import numpy as np
 from bokeh.io import curdoc, output_file
 from bokeh.layouts import row, column
-from bokeh.models import ColumnDataSource, Range1d
+from bokeh.models import ColumnDataSource, Range1d, LinearColorMapper
 from bokeh.models.widgets import Slider, TextInput, Tabs, Panel, Button, DataTable, Div, CheckboxGroup
 from bokeh.models.widgets import NumberFormatter, TableColumn, Dropdown, RadioButtonGroup, Select
 from bokeh.plotting import figure
 from pprint import pprint
 import pandas as pd
 
+SIZE = 800
+
+""" GET DATA """
+data2 = pd.read_csv('data/A15226.txt', sep="\t")
+# print(data2.head)
+data2 = data2.iloc[1:].dropna()
+data2['Date'] = pd.to_datetime(data2['Date local DST']).dropna()
+# print(data2.columns)
+DATES = data2['Date'].tolist()
+dates, times = [], []
+for _ in DATES:
+    dates.append(_.date())
+    times.append(_.time())
+t, times = times, []
+for time in t:
+    times.append(60*60*time.hour + 60*time.minute + time.second + time.microsecond/1E6)
+data2['Date'] = dates
+data2['Time'] = times
+data2 = data2[['Date', 'Time', 'Depth (m)', 'Temp (C)']]
+data2.columns = ['Date', 'Time', 'D', 'T']
+# data2.head()
 
 """
 SETUP DATA
@@ -21,20 +42,24 @@ mu = 0
 x1 = np.linspace(mu - 6 * sigma, mu + 6 * sigma, N)
 y1 = 1/(sigma*np.sqrt(2*pi))*np.exp(-0.5*((x1-mu)/sigma)**2)
 source1 = ColumnDataSource(data=dict(x=x1, y=y1))
+source1 = ColumnDataSource(data2)
 
 """
 SETUP PLOTS
 """
-plot1 = figure(plot_height=600, plot_width=int(phi*600), title="Oh my Gauss",
-              tools="save", x_range=[x1.min(), x1.max()], y_range=[0, phi*y1.max()])
-plot1.line('x', 'y', source=source1, line_width=3, legend="Your Gauss")
+plot1 = figure(plot_height=SIZE, plot_width=int(phi*SIZE), title="Depth vs. Date", tools="save", x_axis_type="datetime")
+plot1.circle(x='Date', y='D', source=source1)
+plot1.y_range.flipped = True
 
+plot2 = figure(plot_height=SIZE, plot_width=int(phi*SIZE), title="Depth vs. Date", tools="save")
+color_mapper = LinearColorMapper(palette='Magma256', low=max(source1.data['D']), high=min(source1.data['D']))
+plot2.circle(x='Time', y='D', source=source1, color={'field': 'D', 'transform': color_mapper})
+plot2.y_range.flipped = True
 """
 SETUP WIDGETS
 """
 div1 = Div(text="""<p style="border:3px; border-style:solid; border-color:#FF0000; padding: 1em;">
-                    Oh My Gauss is designed to let you explore what various kinds of normal distributions look like. 
-                    Try changing the Standard Deviation or Average to see how this affects the plot.</p>""",
+                    This plot is designed to give you an idea of what a Bokeh dashboard would provide.</p>""",
                     width=300, height=130)
 """
 Set up callbacks
@@ -45,9 +70,10 @@ Set up callbacks
 
 # Set up layouts and add to document
 inputs1 = column(div1)
-tab1 = row(inputs1, plot1, width=int(phi*400))
-tab1 = Panel(child=tab1, title="Example")
-tabs = Tabs(tabs=[tab1])
+tab1 = row(inputs1, plot1, width=int(phi*SIZE))
+tab1 = Panel(child=tab1, title="Entire Data")
+tab2 = Panel(child=row(plot2), title='Daily')
+tabs = Tabs(tabs=[tab1, tab2])
 
 curdoc().title = "P.I.E.R. Dashboard"
 curdoc().theme = 'caliber'

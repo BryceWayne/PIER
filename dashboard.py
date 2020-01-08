@@ -27,7 +27,7 @@ SETUP PLOTS
 """
 plot1 = figure(plot_height=600, plot_width=int(phi*600), title="Oh my Gauss",
               tools="save", x_range=[x1.min(), x1.max()], y_range=[0, phi*y1.max()])
-plot1.line('x', 'y', source=source1, line_width=3, legend_label="Your Gauss")
+plot1.line('x', 'y', source=source1, line_width=3, legend="Your Gauss")
 
 """
 SETUP WIDGETS

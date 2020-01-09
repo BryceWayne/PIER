@@ -5,6 +5,8 @@ from bokeh.models import ColumnDataSource, Range1d, LinearColorMapper
 from bokeh.models.widgets import Slider, TextInput, Tabs, Panel, Button, DataTable, Div, CheckboxGroup
 from bokeh.models.widgets import NumberFormatter, TableColumn, Dropdown, RadioButtonGroup, Select
 from bokeh.plotting import figure
+from bokeh.transform import linear_cmap
+from bokeh.util.hex import hexbin
 from pprint import pprint
 import os
 import pandas as pd
@@ -30,6 +32,11 @@ data2 = data2[['Date', 'Time', 'Depth (m)', 'Temp (C)']]
 data2.columns = ['Date', 'Time', 'D', 'T']
 # data2.head()
 
+n = 50000
+x = np.random.standard_normal(n)
+y = np.random.standard_normal(n)
+
+bins = hexbin(data2['Time'], data2['Depth'], 0.1)
 """
 SETUP DATA
 """
@@ -56,6 +63,13 @@ plot2 = figure(plot_height=SIZE, plot_width=int(phi*SIZE), title="Depth vs. Time
 color_mapper2 = LinearColorMapper(palette='Magma256', low=max(source1.data['D']), high=min(source1.data['D']))
 plot2.circle(x='Time', y='D', source=source1, color={'field': 'D', 'transform': color_mapper2})
 plot2.y_range.flipped = True
+
+plot3 = figure(title="Manual hex bin for 50000 points", tools="wheel_zoom,pan,reset",
+           match_aspect=True, background_fill_color='#440154')
+plot3.grid.visible = False
+
+plot3.hex_tile(q="q", r="r", size=0.1, line_color=None, source=bins,
+           fill_color=linear_cmap('counts', 'Magma256', 0, max(bins.counts)))
 """
 SETUP WIDGETS
 """
@@ -74,7 +88,8 @@ inputs1 = column(div1)
 tab1 = row(inputs1, plot1, width=int(phi*SIZE))
 tab1 = Panel(child=tab1, title="Entire Data")
 tab2 = Panel(child=row(plot2), title='Daily')
-tabs = Tabs(tabs=[tab1, tab2])
+tab3 = Panel(child=row(plot3), title='Heatmap')
+tabs = Tabs(tabs=[tab1, tab2, tab3])
 
 curdoc().title = "P.I.E.R. Dashboard"
 curdoc().theme = 'caliber'

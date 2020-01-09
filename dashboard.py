@@ -48,12 +48,13 @@ source1 = ColumnDataSource(data2)
 SETUP PLOTS
 """
 plot1 = figure(plot_height=SIZE, plot_width=int(phi*SIZE), title="Depth vs. Date", tools="save", x_axis_type="datetime")
-plot1.circle(x='Date', y='D', source=source1)
+color_mapper1 = LinearColorMapper(palette='Magma256', low=max(source1.data['T']), high=min(source1.data['T']))
+plot1.circle(x='Date', y='D', source=source1, color={'field': 'D', 'transform': color_mapper1})
 plot1.y_range.flipped = True
 
 plot2 = figure(plot_height=SIZE, plot_width=int(phi*SIZE), title="Depth vs. Time", tools="save")
-color_mapper = LinearColorMapper(palette='Turbo256', low=max(source1.data['D']), high=min(source1.data['D']))
-plot2.circle(x='Time', y='D', source=source1, color={'field': 'D', 'transform': color_mapper})
+color_mapper2 = LinearColorMapper(palette='Magma256', low=max(source1.data['D']), high=min(source1.data['D']))
+plot2.circle(x='Time', y='D', source=source1, color={'field': 'D', 'transform': color_mapper2})
 plot2.y_range.flipped = True
 """
 SETUP WIDGETS

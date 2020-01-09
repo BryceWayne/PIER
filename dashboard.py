@@ -51,8 +51,8 @@ plot1 = figure(plot_height=SIZE, plot_width=int(phi*SIZE), title="Depth vs. Date
 plot1.circle(x='Date', y='D', source=source1)
 plot1.y_range.flipped = True
 
-plot2 = figure(plot_height=SIZE, plot_width=int(phi*SIZE), title="Depth vs. Date", tools="save")
-color_mapper = LinearColorMapper(palette='Magma256', low=max(source1.data['D']), high=min(source1.data['D']))
+plot2 = figure(plot_height=SIZE, plot_width=int(phi*SIZE), title="Depth vs. Time", tools="save")
+color_mapper = LinearColorMapper(palette='Turbo256', low=max(source1.data['D']), high=min(source1.data['D']))
 plot2.circle(x='Time', y='D', source=source1, color={'field': 'D', 'transform': color_mapper})
 plot2.y_range.flipped = True
 """

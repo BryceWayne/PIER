@@ -16,5 +16,5 @@ EXPOSE 8080
 
 CMD bokeh serve --port 8080 \
     --allow-websocket-origin="*" \
-    --num-procs=${NUM_PROCS} \
+#     --num-procs=${NUM_PROCS} \
     PIER/dashboard.py

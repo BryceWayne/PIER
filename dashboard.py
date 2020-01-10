@@ -11,7 +11,7 @@ import pandas as pd
 
 SIZE = 800
 """ GET DATA """
-data2 = pd.read_csv('data/A15226.txt', sep="\t")
+data2 = pd.read_csv('PIER/data/A15226.txt', sep="\t")
 # print(data2.head)
 data2 = data2.iloc[1:].dropna()
 data2['Date'] = pd.to_datetime(data2['Date local DST']).dropna()

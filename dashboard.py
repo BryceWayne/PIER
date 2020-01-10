@@ -79,7 +79,7 @@ inputs1 = column(div1)
 tab1 = row(inputs1, plot1, width=int(phi*SIZE))
 tab1 = Panel(child=tab1, title="Entire Data")
 tab2 = Panel(child=row(plot2), title='Daily')
-tab3 = Panel(child=row(plot3), title='Heatmap')
+# tab3 = Panel(child=row(plot3), title='Heatmap')
 tabs = Tabs(tabs=[tab1, tab2])
 
 curdoc().title = "P.I.E.R. Dashboard"
